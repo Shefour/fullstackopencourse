@@ -8,16 +8,16 @@ const Hello = (props) => {
 }
 
 const App = () => {
-  const name = 'Peter'
-  const age = 46; 
+  const peepos = [
+    { name: 'Peter', age: 4 },
+    { name: 'Maya', age: 10 },
+  ]
 
   return (
     <div>
       <h1>Greetings</h1>
-
-      <Hello name='Viktar' age={'X'}/>
-      <Hello name='Doris' age={age+10}/>
-      <Hello name={name} age={age}/>
+      <p>{peepos[0].name}, {peepos[0].age}</p>
+      <p>{peepos[1].name}, {peepos[1].age}</p>
     </div>
   )
 }
