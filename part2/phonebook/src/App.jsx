@@ -1,65 +1,90 @@
-import { useEffect, useState } from 'react'
-import './App.css'
-import axios from 'axios'
-import dbservice from './services/dbservice'
-import Filter from './components/Filter'
-import Persons from './components/Persons'
-
-// TODO REPAIR THE DAMN FILTER
-// Line 61 changed from <Filter handler={handleFilterChange}></Filter> to <Filter handler={handleFilterChange}/>.
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import dbservice from './services/dbservice';
+import Filter from './components/Filter';
+import Persons from './components/Persons';
+import './App.css';
 
 const App = () => {
-  const [filter, setFilter] = useState('')
-  const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('');
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then(response => {
-      setPersons(response.data)
-    }
-    )
-  }, [])
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/persons');
+        setPersons(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-  const addName = (event) => {
-    event.preventDefault()
+    fetchData();
+  }, []);
+
+  const addName = async (event) => {
+    event.preventDefault();
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
+    };
+
+    try {
+      const updatedPerson = await dbservice.create_person(personObject);
+      setPersons((prevPersons) => {
+        // If the person was updated, replace the old information
+        const updatedPersons = prevPersons.map((person) =>
+          person.id === updatedPerson.id ? updatedPerson : person
+        );
+
+        // If the person is not in the phonebook, add it
+        if (!prevPersons.some((person) => person.id === updatedPerson.id)) {
+          return [...updatedPersons, updatedPerson];
+        }
+
+        return updatedPersons;
+      });
+    } catch (error) {
+      console.error('Error creating/updating person:', error);
     }
-    if (persons.some(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-    } else {
-      dbservice.create_person(personObject)
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
-    }
-  }
-  axios.get('http://localhost:3001/persons').then(response => {
-    console.log(response)
-  }
-  )
+
+    setNewName('');
+    setNewNumber('');
+  };
+
   const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
+    setNewName(event.target.value);
+  };
+
   const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
+    setNewNumber(event.target.value);
+  };
+
   const handleFilterChange = (event) => {
-    setFilter(event.target.value)
-  }
-  const deletePerson = (id) => {
-    dbservice.delete_person(id)
-    setPersons(persons.filter(person => person.id !== id))
-  }
+    setFilter(event.target.value);
+  };
+
+  const deletePerson = async (id) => {
+    const personToDelete = persons.find((p) => p.id === id);
+    const shouldDelete = window.confirm(`Delete ${personToDelete.name}?`);
+
+    if (shouldDelete) {
+      try {
+        await dbservice.delete_person(id);
+        setPersons((prevPersons) => prevPersons.filter((person) => person.id !== id));
+      } catch (error) {
+        console.error('Error deleting person:', error);
+      }
+    }
+  };
 
   return (
     <>
       <div>
         <h2>Phonebook</h2>
-        <Filter handler={handleFilterChange}/>
+        <Filter handler={handleFilterChange} />
         <h2>add a new</h2>
         <form onSubmit={addName}>
           <div>
@@ -78,6 +103,7 @@ const App = () => {
         </ul>
       </div>
     </>
-  )
-}
-export default App
+  );
+};
+
+export default App;
