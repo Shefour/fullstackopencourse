@@ -8,11 +8,11 @@
 
 ## About
 
-Provide an introduction to your project. Explain what it does, why it's useful, and any other context that might be helpful. You can also mention any technologies or frameworks used in your project.
+My fullstackopen course I'm doing in free time
 
 ## Features
 
-List the key features of your project. You can use bullet points for this section:
+React apps and json stuff
 
 - React & Vite
 - Everything in English for clarity
