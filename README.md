@@ -19,9 +19,16 @@ List the key features of your project. You can use bullet points for this sectio
 - Seperation for clarity
 
 ## Getting Started
-You'll need git bash to run it
+Node is needed for this to run
 
 ```bash
-# Finish writing later
 npm install
 
+# in first window
+cd directory name
+npm run dev
+
+#in second window if needed
+cd directory_name
+cd src
+npx json-server --port 3001 --watch db.json
