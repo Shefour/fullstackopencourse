@@ -21,13 +21,13 @@ let notes = [
     }
 ]
 
-app.get('/', (req, res) => {
-    res.send('<h1>Hello Doris!</h1>')
-})
+  app.get('/', (req, res) => {
+      res.send('<h1>Bye Doris!</h1>')
+  })
 
-app.get('/api/notes', (req, res) => {
-    res.json(notes)
-})
+  app.get('/api/notes', (req, res) => {
+      res.json(notes)
+  })
 
   app.get('/api/notes/:id', (request, response) => {
     const id = Number(request.params.id)
@@ -66,6 +66,7 @@ app.get('/api/notes', (req, res) => {
     const note = {
       content: body.content,
       important: body.important || false,
+      date: new Date(),
       id: generateId(),
     }
 
@@ -76,5 +77,6 @@ app.get('/api/notes', (req, res) => {
   })
 
 const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
